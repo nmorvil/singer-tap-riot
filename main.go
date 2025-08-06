@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
+	"github.com/nmorvil/singer-tap-riot/internal/tap"
+	"github.com/nmorvil/singer-tap-riot/pkg/singer"
 	"log"
 	"os"
-	"singer-tap-riot/internal/tap"
-	"singer-tap-riot/pkg/singer"
 )
 
 func main() {

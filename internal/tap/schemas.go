@@ -4,8 +4,8 @@ import (
 	"github.com/KnutZuidema/golio/riot/account"
 	"github.com/KnutZuidema/golio/riot/lol"
 	"github.com/invopop/jsonschema"
+	"github.com/nmorvil/singer-tap-riot/pkg/singer"
 	"github.com/wk8/go-ordered-map/v2"
-	"singer-tap-riot/pkg/singer"
 )
 
 type Props = orderedmap.OrderedMap[string, *jsonschema.Schema]

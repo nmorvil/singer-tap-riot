@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/KnutZuidema/golio"
 	"github.com/KnutZuidema/golio/api"
-	"singer-tap-riot/pkg/singer"
+	"github.com/nmorvil/singer-tap-riot/pkg/singer"
 	"strconv"
 	"sync"
 	"time"
