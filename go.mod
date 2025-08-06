@@ -1,4 +1,4 @@
-module singer-tap-riot
+module github.com/nmorvil/singer-tap-riot
 
 go 1.24
 
