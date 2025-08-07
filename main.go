@@ -64,7 +64,7 @@ func main() {
 			log.Fatal(err)
 		}
 	} else {
-		state = &singer.State{Value: make(map[string]map[string]string)}
+		state = &singer.State{Value: make(map[string]map[string]int64)}
 	}
 
 	tap.RunSync(singerTap, cfg, catalog, state)

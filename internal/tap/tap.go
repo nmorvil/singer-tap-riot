@@ -52,20 +52,16 @@ func RunSync(t *singer.Tap, c *Config, cat *singer.Catalog, s *singer.State) err
 		switch stream {
 		case Matches:
 			t.Log("Starting sync of matches")
-			syncMatchesConcurrent(t, playerGroups, s, c)
-			break
+			return syncMatchesConcurrent(t, playerGroups, s, c)
 		case MatchTimelines:
 			t.Log("Starting sync of match timelines")
-			syncMatchTimelinesConcurrent(t, playerGroups, s, c)
-			break
+			return syncMatchTimelinesConcurrent(t, playerGroups, s, c)
 		case Elos:
 			t.Log("Starting sync of elos")
-			syncElosConcurrent(t, playerGroups, s, c)
-			break
+			return syncElosConcurrent(t, playerGroups, s, c)
 		case Accounts:
 			t.Log("Starting sync of accounts")
-			syncAccountsConcurrent(t, playerGroups, s, c)
-			break
+			return syncAccountsConcurrent(t, playerGroups, s, c)
 		default:
 			return errors.New("Unknown stream: " + stream)
 		}
@@ -185,16 +181,19 @@ func syncElosConcurrent(t *singer.Tap, playerGroups []PlayerGroup, s *singer.Sta
 
 			for _, player := range players {
 				mu.Lock()
-				from, k := currentState.Value[Elos][player]
-				if !k {
-					from = c.StartDate
+				var fromTime time.Time
+				var err error
+				stateValue, ok := currentState.Value[Elos][player]
+				if ok {
+					fromTime = time.Unix(stateValue, 0)
+				} else {
+					fromTime, err = startDateAsTime(c.StartDate)
 				}
 				mu.Unlock()
 
-				fromTime, err := startDateAsTime(from)
 				if err != nil {
 					mu.Lock()
-					t.LogError("Invalid start date: " + from + " for player: " + player + " - skipping")
+					t.LogError("Invalid start date: " + c.StartDate + " for player: " + player + " - skipping")
 					mu.Unlock()
 					continue
 				}
@@ -217,9 +216,9 @@ func syncElosConcurrent(t *singer.Tap, playerGroups []PlayerGroup, s *singer.Sta
 				mu.Lock()
 				t.WriteRecord(Elos, elo)
 				if currentState.Value[Elos] == nil {
-					currentState.Value[Elos] = make(map[string]string)
+					currentState.Value[Elos] = make(map[string]int64)
 				}
-				currentState.Value[Elos][player] = time.Now().Format("2006-01-02")
+				currentState.Value[Elos][player] = time.Now().Unix()
 				t.WriteState(currentState)
 				mu.Unlock()
 			}
@@ -250,22 +249,25 @@ func syncMatchesConcurrent(t *singer.Tap, playerGroups []PlayerGroup, s *singer.
 				mu.Lock()
 				t.Log(fmt.Sprintf("Group %d: Starting player %d/%d: %s", gIdx+1, playerIdx+1, len(players), player))
 
-				from, k := currentState.Value[Matches][player]
-				if !k {
-					from = c.StartDate
+				var fromTime time.Time
+				var err error
+				stateValue, ok := currentState.Value[Matches][player]
+				if ok {
+					fromTime = time.Unix(stateValue, 0)
+				} else {
+					fromTime, err = startDateAsTime(c.StartDate)
 				}
 				mu.Unlock()
 
-				fromTime, err := startDateAsTime(from)
 				if err != nil {
 					mu.Lock()
-					t.LogError("Invalid start date: " + from + " for player: " + player + " - skipping")
+					t.LogError("Invalid start date: " + c.StartDate + " for player: " + player + " - skipping")
 					mu.Unlock()
 					continue
 				}
 
 				mu.Lock()
-				t.Log(fmt.Sprintf("Processing matches from %s for player %s", from, player))
+				t.Log(fmt.Sprintf("Processing matches from %s for player %s", fromTime, player))
 				mu.Unlock()
 
 				ids, err := service.getMatchIdsByPlayer(player, fromTime, c.QueueId)
@@ -303,9 +305,9 @@ func syncMatchesConcurrent(t *singer.Tap, playerGroups []PlayerGroup, s *singer.
 
 				mu.Lock()
 				if currentState.Value[Matches] == nil {
-					currentState.Value[Matches] = make(map[string]string)
+					currentState.Value[Matches] = make(map[string]int64)
 				}
-				currentState.Value[Matches][player] = time.Now().Format("2006-01-02")
+				currentState.Value[Matches][player] = time.Now().Unix()
 				t.WriteState(currentState)
 				mu.Unlock()
 			}
@@ -336,16 +338,19 @@ func syncMatchTimelinesConcurrent(t *singer.Tap, playerGroups []PlayerGroup, s *
 				mu.Lock()
 				t.Log(fmt.Sprintf("Group %d: Starting player %d/%d: %s", gIdx+1, playerIdx+1, len(players), player))
 
-				from, k := currentState.Value[MatchTimelines][player]
-				if !k {
-					from = c.StartDate
+				var fromTime time.Time
+				var err error
+				stateValue, ok := currentState.Value[MatchTimelines][player]
+				if ok {
+					fromTime = time.Unix(stateValue, 0)
+				} else {
+					fromTime, err = startDateAsTime(c.StartDate)
 				}
 				mu.Unlock()
 
-				fromTime, err := startDateAsTime(from)
 				if err != nil {
 					mu.Lock()
-					t.LogError("Invalid start date: " + from + " for player: " + player + " - skipping")
+					t.LogError("Invalid start date: " + c.StartDate + " for player: " + player + " - skipping")
 					mu.Unlock()
 					continue
 				}
@@ -384,9 +389,9 @@ func syncMatchTimelinesConcurrent(t *singer.Tap, playerGroups []PlayerGroup, s *
 
 				mu.Lock()
 				if currentState.Value[MatchTimelines] == nil {
-					currentState.Value[MatchTimelines] = make(map[string]string)
+					currentState.Value[MatchTimelines] = make(map[string]int64)
 				}
-				currentState.Value[MatchTimelines][player] = time.Now().Format("2006-01-02")
+				currentState.Value[MatchTimelines][player] = time.Now().Unix()
 				t.WriteState(currentState)
 				mu.Unlock()
 			}

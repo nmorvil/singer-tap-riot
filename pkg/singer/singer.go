@@ -64,7 +64,7 @@ func (s Schema) Write(w io.Writer) error {
 }
 
 type State struct {
-	Value map[string]map[string]string `json:"value"`
+	Value map[string]map[string]int64 `json:"value"`
 }
 
 func (s State) Type() MessageType { return StateMessage }
@@ -156,30 +156,6 @@ func (t *Tap) LogError(format string, args ...interface{}) {
 	}
 }
 
-// Legacy Config support - deprecated, use internal/config package instead
-type Config map[string]interface{}
-
-func (c Config) GetString(key string) (string, bool) {
-	if val, ok := c[key]; ok {
-		if str, ok := val.(string); ok {
-			return str, true
-		}
-	}
-	return "", false
-}
-
-func (c Config) GetInt(key string) (int, bool) {
-	if val, ok := c[key]; ok {
-		switch v := val.(type) {
-		case float64:
-			return int(v), true
-		case int:
-			return v, true
-		}
-	}
-	return 0, false
-}
-
 type Catalog struct {
 	Streams []Stream `json:"streams"`
 }
@@ -203,12 +179,12 @@ func LoadState(path string) (*State, error) {
 	}
 	defer file.Close()
 
-	var state State
+	var state map[string]map[string]int64
 	err = json.NewDecoder(file).Decode(&state)
 	if err != nil {
 		return nil, err
 	}
-	return &state, nil
+	return &State{state}, nil
 }
 
 func LoadCatalog(path string) (*Catalog, error) {
