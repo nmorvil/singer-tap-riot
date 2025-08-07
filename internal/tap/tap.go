@@ -52,16 +52,24 @@ func RunSync(t *singer.Tap, c *Config, cat *singer.Catalog, s *singer.State) err
 		switch stream {
 		case Matches:
 			t.Log("Starting sync of matches")
-			return syncMatchesConcurrent(t, playerGroups, s, c)
+			if err := syncMatchesConcurrent(t, playerGroups, s, c); err != nil {
+				return err
+			}
 		case MatchTimelines:
 			t.Log("Starting sync of match timelines")
-			return syncMatchTimelinesConcurrent(t, playerGroups, s, c)
+			if err := syncMatchTimelinesConcurrent(t, playerGroups, s, c); err != nil {
+				return err
+			}
 		case Elos:
 			t.Log("Starting sync of elos")
-			return syncElosConcurrent(t, playerGroups, s, c)
+			if err := syncElosConcurrent(t, playerGroups, s, c); err != nil {
+				return err
+			}
 		case Accounts:
 			t.Log("Starting sync of accounts")
-			return syncAccountsConcurrent(t, playerGroups, s, c)
+			if err := syncAccountsConcurrent(t, playerGroups, s, c); err != nil {
+				return err
+			}
 		default:
 			return errors.New("Unknown stream: " + stream)
 		}
