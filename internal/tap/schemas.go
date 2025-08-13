@@ -105,9 +105,9 @@ type Elo struct {
 }
 
 type MatchTimeline struct {
-	Frames  []MatchFrame     `json:"frames"`
-	Events  []lol.MatchEvent `json:"events"`
-	MatchId string           `json:"matchId"`
+	Frames  []MatchFrame `json:"frames"`
+	Events  []MatchEvent `json:"events"`
+	MatchId string       `json:"matchId"`
 }
 
 type MatchFrame struct {
@@ -123,6 +123,46 @@ type MatchFrame struct {
 	TotalGold                float64     `json:"totalGold"`
 	XP                       float64     `json:"xp"`
 	Timestamp                float64     `json:"timestamp"`
+}
+
+type MatchEvent struct {
+	EventType               string              `json:"eventType"`
+	TowerType               string              `json:"towerType"`
+	TeamID                  int                 `json:"teamId"`
+	AscendedType            string              `json:"ascendedType"`
+	KillerID                int                 `json:"killerId"`
+	LevelUpType             string              `json:"levelUpType"`
+	PointCaptured           string              `json:"pointCaptured"`
+	AssistingParticipantIDs []int               `json:"assistingParticipantIds"`
+	WardType                string              `json:"wardType"`
+	MonsterType             string              `json:"monsterType"`
+	Type                    *lol.MatchEventType `json:"type"`
+	SkillSlot               int                 `json:"skillSlot"`
+	VictimID                int                 `json:"victimId"`
+	Timestamp               int                 `json:"timestamp"`
+	AfterID                 int                 `json:"afterId"`
+	MonsterSubType          string              `json:"monsterSubType"`
+	LaneType                string              `json:"laneType"`
+	ItemID                  int                 `json:"itemId"`
+	ParticipantID           int                 `json:"participantId"`
+	BuildingType            string              `json:"buildingType"`
+	CreatorID               int                 `json:"creatorId"`
+	Position                *lol.MatchPosition  `json:"position"`
+	BeforeID                int                 `json:"beforeId"`
+	VictimDamageDealt       []DamageDealt       `json:"victimDamageDealt"`
+	VictimDamageReceived    []DamageDealt       `json:"victimDamageReceived"`
+}
+
+type DamageDealt struct {
+	Basic          bool    `json:"basic"`
+	MagicDamage    float64 `json:"magicDamage"`
+	Name           string  `json:"name"`
+	ParticipantId  int     `json:"participantId"`
+	PhysicalDamage float64 `json:"physicalDamage"`
+	SpellName      string  `json:"spellName"`
+	SpellSlot      int     `json:"spellSlot"`
+	TrueDamage     float64 `json:"trueDamage"`
+	Type           string  `json:"type"`
 }
 
 type DamageStats struct {

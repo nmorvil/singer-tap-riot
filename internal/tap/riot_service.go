@@ -124,7 +124,7 @@ func (r *RiotService) getMatchTimeline(matchId string) (*MatchTimeline, error) {
 	type Frame struct {
 		Timestamp         int                        `json:"timestamp"`
 		ParticipantFrames map[string]json.RawMessage `json:"participantFrames"`
-		Events            []lol.MatchEvent           `json:"events"`
+		Events            []MatchEvent               `json:"events"`
 	}
 
 	type TimelineInfo struct {
@@ -147,7 +147,7 @@ func (r *RiotService) getMatchTimeline(matchId string) (*MatchTimeline, error) {
 	}
 
 	var frames []MatchFrame
-	var events []lol.MatchEvent
+	var events []MatchEvent
 
 	for _, frame := range timelineResp.Info.Frames {
 		timestamp := float64(frame.Timestamp)
